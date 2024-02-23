@@ -20,6 +20,7 @@ Based on [this setup video](https://www.youtube.com/watch?v=ZjMzBd1Dqz8)
 ## Plugins
  - lazy.nvim - Plugin manager
  - comment.nvim - Commenting
+ - gitsigns - Git status signs
  - indent-blankline - Indentation UI
  - lspconfig - LSP support
  - lspsaga - Enhanced LSP support
@@ -39,7 +40,6 @@ Based on [this setup video](https://www.youtube.com/watch?v=ZjMzBd1Dqz8)
  - whichkey - Shortcut hints
 
 ## TBA Plugins
- - gitsigns - Git status signs
  - copilot - Github copilot integration *(should we do even do that?)*
  - leap - Quick navigation in viewable text
  - trouble - Prettier diagnostics
