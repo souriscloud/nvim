@@ -27,13 +27,19 @@ Based on [this setup video](https://www.youtube.com/watch?v=ZjMzBd1Dqz8)
  - mason - LSP installation manager
  - mason-lspconfig - Better Mason and lsp-config integration
  - efm-langserver - Linting and Formatting
- - noice - vim commandline UI
- - nvim-autopairs - autopair completion
- - nvim-cmp - auto-completion support
- - nvim-tree - file tree explorer
- - nvim-web-devicons - file icons
- - telescope - fuzzy finder
- - tmux-navigator - tmux window navigation support
- - vim-highlightedyank - highlights yanked text
- - vim-illuminate - illuminates instances of word under cursor
- - whichkey - shortcut hints
+ - noice - Vim commandline UI
+ - nvim-autopairs - Autopair completion
+ - nvim-cmp - Auto-completion support
+ - nvim-tree - File tree explorer
+ - nvim-web-devicons - File icons
+ - telescope - Fuzzy finder
+ - tmux-navigator - TMux window navigation support
+ - vim-highlightedyank - Highlights yanked text
+ - vim-illuminate - Illuminates instances of word under cursor
+ - whichkey - Shortcut hints
+
+## TBA Plugins
+ - gitsigns - Git status signs
+ - copilot - Github copilot integration *(should we do even do that?)*
+ - leap - Quick navigation in viewable text
+ - trouble - Prettier diagnostics
