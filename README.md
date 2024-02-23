@@ -35,6 +35,7 @@ Based on [this setup video](https://www.youtube.com/watch?v=ZjMzBd1Dqz8)
  - nvim-web-devicons - File icons
  - telescope - Fuzzy finder
  - tmux-navigator - TMux window navigation support
+ - trouble - Prettier diagnostics
  - vim-highlightedyank - Highlights yanked text
  - vim-illuminate - Illuminates instances of word under cursor
  - whichkey - Shortcut hints
@@ -42,4 +43,3 @@ Based on [this setup video](https://www.youtube.com/watch?v=ZjMzBd1Dqz8)
 ## TBA Plugins
  - copilot - Github copilot integration *(should we do even do that?)*
  - leap - Quick navigation in viewable text
- - trouble - Prettier diagnostics
