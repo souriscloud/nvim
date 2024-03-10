@@ -18,7 +18,6 @@ local config = function()
 			"bash",
 			"lua",
 			"dockerfile",
-			"solidity",
 			"gitignore",
 			"python",
 			"vue",
@@ -33,7 +32,6 @@ end
 
 return {
 	"nvim-treesitter/nvim-treesitter",
-  lazy = false,
-  config = config
+	lazy = false,
+	config = config,
 }
-
