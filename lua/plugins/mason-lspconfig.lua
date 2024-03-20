@@ -7,6 +7,7 @@ local opts = {
 		"html",
 		"cssls",
 		"jsonls",
+		"gopls",
 	},
 	automatic_installation = true,
 }

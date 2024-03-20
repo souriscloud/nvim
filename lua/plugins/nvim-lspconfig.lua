@@ -40,7 +40,7 @@ local config = function()
 	lspconfig.jsonls.setup({
 		capabilities = capabilities,
 		on_attach = on_attach,
-		filetypes = { "json", "jsonc" },
+		filetypes = { "json", "jsonp" },
 	})
 
 	-- python
@@ -89,6 +89,12 @@ local config = function()
 
 	-- docker
 	lspconfig.dockerls.setup({
+		capabilities = capabilities,
+		on_attach = on_attach,
+	})
+
+	-- go
+	lspconfig.gopls.setup({
 		capabilities = capabilities,
 		on_attach = on_attach,
 	})

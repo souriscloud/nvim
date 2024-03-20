@@ -1,6 +1,6 @@
 local config = function()
 	local theme = require("lualine.themes.nightfox")
-	theme.normal.c.bg = nil
+	-- theme.normal.c.bg = nil
 
 	require("lualine").setup({
 		options = {
