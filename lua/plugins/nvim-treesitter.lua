@@ -17,10 +17,12 @@ local config = function()
 			"markdown",
 			"bash",
 			"lua",
+			"tsx",
 			"dockerfile",
 			"gitignore",
 			"python",
 			"vue",
+			"rust",
 		},
 		auto_install = true,
 		highlight = {

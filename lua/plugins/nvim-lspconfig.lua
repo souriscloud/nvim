@@ -36,6 +36,13 @@ local config = function()
 		},
 	})
 
+	-- html
+	lspconfig.html.setup({
+		capabilities = capabilities,
+		on_attach = on_attach,
+		filetypes = { "html" },
+	})
+
 	-- json
 	lspconfig.jsonls.setup({
 		capabilities = capabilities,
@@ -66,9 +73,13 @@ local config = function()
 		capabilities = capabilities,
 		filetypes = {
 			"typescript",
+			"typescriptreact",
+			"typescript.tsx",
 		},
 		root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", ".git"),
+		cmd = { "typescript-language-server", "--stdio" },
 	})
+	lspconfig.tailwindcss.setup({})
 
 	-- html, typescriptreact, javascriptreact, css, sass, scss, less, svelte, vue
 	lspconfig.emmet_ls.setup({
@@ -99,6 +110,21 @@ local config = function()
 		on_attach = on_attach,
 	})
 
+	-- rust
+	lspconfig.rust_analyzer.setup({
+		capabilities = capabilities,
+		on_attach = on_attach,
+		filetypes = { "rust" },
+		root_dir = lspconfig.util.root_pattern("Cargo.toml"),
+		settings = {
+			["rust-analyzer"] = {
+				cargo = {
+					allFeatures = true,
+				},
+			},
+		},
+	})
+
 	local luacheck = require("efmls-configs.linters.luacheck")
 	local stylua = require("efmls-configs.formatters.stylua")
 	local flake8 = require("efmls-configs.linters.flake8")
@@ -115,7 +141,7 @@ local config = function()
 			"lua",
 			"python",
 			"json",
-			"jsonc",
+			"jsonp",
 			"javascript",
 			"javascriptreact",
 			"typescript",
