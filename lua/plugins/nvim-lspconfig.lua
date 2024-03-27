@@ -103,6 +103,18 @@ local config = function()
 		capabilities = capabilities,
 		on_attach = on_attach,
 	})
+	lspconfig.docker_compose_language_service.setup({
+		capabilities = capabilities,
+		on_attach = on_attach,
+		filetypes = { "yaml.docker-compose" },
+		root_dir = lspconfig.util.root_pattern(
+			"docker-compose.yaml",
+			"docker-compose.yml",
+			"compose.yaml",
+			"compose.yml"
+		),
+		single_file_support = true,
+	})
 
 	-- go
 	lspconfig.gopls.setup({
