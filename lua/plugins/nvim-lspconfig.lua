@@ -137,6 +137,13 @@ local config = function()
 		},
 	})
 
+	-- swift
+	lspconfig.sourcekit.setup({
+		capabilities = capabilities,
+		on_attach = on_attach,
+		cmd = { "/Library/Developer/CommandLineTools/usr/bin/sourcekit-lsp" },
+	})
+
 	local luacheck = require("efmls-configs.linters.luacheck")
 	local stylua = require("efmls-configs.formatters.stylua")
 	local flake8 = require("efmls-configs.linters.flake8")
