@@ -1,7 +1,28 @@
--- auto-format on save (via efm-langserver)
-local lsp_fmt_group = vim.api.nvim_create_augroup("LspFormattingGroup", {})
+-- LSP attach: set buffer-local keymaps + per-server hooks
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("LspAttachGroup", {}),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if not client then
+      return
+    end
+
+    -- Standard keymaps for any attached server
+    require("util.lsp").on_attach(client, args.buf)
+
+    -- Per-server hooks
+    if client.name == "eslint" then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = args.buf,
+        command = "EslintFixAll",
+      })
+    end
+  end,
+})
+
+-- Format on save via efm-langserver
 vim.api.nvim_create_autocmd("BufWritePre", {
-  group = lsp_fmt_group,
+  group = vim.api.nvim_create_augroup("LspFormattingGroup", {}),
   callback = function(args)
     local efm = vim.lsp.get_clients({ bufnr = args.buf, name = "efm" })
     if vim.tbl_isempty(efm) then
@@ -11,7 +32,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- flash on yank (replaces vim-highlightedyank plugin)
+-- Flash on yank (replaces vim-highlightedyank plugin)
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("HighlightYank", {}),
   callback = function()

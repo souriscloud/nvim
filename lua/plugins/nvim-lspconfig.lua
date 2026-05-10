@@ -1,28 +1,35 @@
-local on_attach = require("util.lsp").on_attach
 local diagnostic_signs = require("util.lsp").diagnostic_signs
 
 local config = function()
 	require("neoconf").setup({})
-
-	-- autopairs: brackets / quotes
 	require("nvim-autopairs").setup({})
 
-	local cmp_nvim_lsp = require("cmp_nvim_lsp")
-	local lspconfig = require("lspconfig")
+	-- Diagnostic signs (modern API; replaces vim.fn.sign_define loop)
+	vim.diagnostic.config({
+		signs = {
+			text = {
+				[vim.diagnostic.severity.ERROR] = diagnostic_signs.Error,
+				[vim.diagnostic.severity.WARN] = diagnostic_signs.Warn,
+				[vim.diagnostic.severity.HINT] = diagnostic_signs.Hint,
+				[vim.diagnostic.severity.INFO] = diagnostic_signs.Info,
+			},
+		},
+		virtual_text = { spacing = 2, prefix = "●" },
+		severity_sort = true,
+		float = { border = "rounded", source = true },
+	})
 
-	for type, icon in pairs(diagnostic_signs) do
-		local hl = "DiagnosticSign" .. type
-		vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-	end
+	-- Global capabilities (cmp + base) — apply to every server via "*"
+	local capabilities = vim.tbl_deep_extend(
+		"force",
+		vim.lsp.protocol.make_client_capabilities(),
+		require("cmp_nvim_lsp").default_capabilities()
+	)
+	vim.lsp.config("*", { capabilities = capabilities })
 
-	local capabilities = cmp_nvim_lsp.default_capabilities()
+	-- ------- Per-server config (merged with nvim-lspconfig's defaults) -------
 
-	-- ------- Language servers -------
-
-	-- Lua (nvim config)
-	lspconfig.lua_ls.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
+	vim.lsp.config("lua_ls", {
 		settings = {
 			Lua = {
 				diagnostics = { globals = { "vim" } },
@@ -36,10 +43,7 @@ local config = function()
 		},
 	})
 
-	-- TypeScript / JavaScript (renamed from tsserver to ts_ls)
-	lspconfig.ts_ls.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
+	vim.lsp.config("ts_ls", {
 		filetypes = {
 			"javascript",
 			"javascriptreact",
@@ -47,27 +51,14 @@ local config = function()
 			"typescriptreact",
 			"typescript.tsx",
 		},
-		root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", ".git"),
-		cmd = { "typescript-language-server", "--stdio" },
+		root_markers = { "package.json", "tsconfig.json", ".git" },
 	})
 
-	-- ESLint LSP (replaces eslint_d-via-efm). Provides diagnostics + code actions
-	-- and, via the autocmd below, runs `:EslintFixAll` on save.
-	lspconfig.eslint.setup({
-		capabilities = capabilities,
-		on_attach = function(client, bufnr)
-			on_attach(client, bufnr)
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				buffer = bufnr,
-				command = "EslintFixAll",
-			})
-		end,
-	})
+	-- ESLint: defaults from nvim-lspconfig are fine; we add EslintFixAll
+	-- via the LspAttach autocmd in config/autocmds.lua.
+	vim.lsp.config("eslint", {})
 
-	-- Tailwind. Narrow default filetype list (40+) to what we actually use.
-	lspconfig.tailwindcss.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
+	vim.lsp.config("tailwindcss", {
 		filetypes = {
 			"html",
 			"css",
@@ -85,24 +76,11 @@ local config = function()
 		},
 	})
 
-	-- HTML
-	lspconfig.html.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
-		filetypes = { "html" },
-	})
+	vim.lsp.config("html", { filetypes = { "html" } })
 
-	-- JSON
-	lspconfig.jsonls.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
-		filetypes = { "json", "jsonc" },
-	})
+	vim.lsp.config("jsonls", { filetypes = { "json", "jsonc" } })
 
-	-- YAML
-	lspconfig.yamlls.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
+	vim.lsp.config("yamlls", {
 		settings = {
 			yaml = {
 				keyOrdering = false,
@@ -118,23 +96,11 @@ local config = function()
 		},
 	})
 
-	-- Bash / sh
-	lspconfig.bashls.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
-		filetypes = { "sh", "bash", "zsh" },
-	})
+	vim.lsp.config("bashls", { filetypes = { "sh", "bash", "zsh" } })
 
-	-- Markdown
-	lspconfig.marksman.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
-	})
+	vim.lsp.config("marksman", {})
 
-	-- Python (basedpyright — modern fork of pyright)
-	lspconfig.basedpyright.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
+	vim.lsp.config("basedpyright", {
 		settings = {
 			basedpyright = {
 				analysis = {
@@ -147,10 +113,7 @@ local config = function()
 		},
 	})
 
-	-- PHP / Blade (intelephense is a Node app — no local PHP needed)
-	lspconfig.intelephense.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
+	vim.lsp.config("intelephense", {
 		filetypes = { "php", "blade" },
 		settings = {
 			intelephense = {
@@ -159,29 +122,17 @@ local config = function()
 					maxSize = 5000000,
 				},
 				environment = {
-					-- adjust if your docker image uses a different PHP version
 					phpVersion = "8.3",
 				},
 			},
 		},
 	})
 
-	-- Docker
-	lspconfig.dockerls.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
-	})
-	lspconfig.docker_compose_language_service.setup({
-		capabilities = capabilities,
-		on_attach = on_attach,
+	vim.lsp.config("dockerls", {})
+
+	vim.lsp.config("docker_compose_language_service", {
 		filetypes = { "yaml.docker-compose" },
-		root_dir = lspconfig.util.root_pattern(
-			"docker-compose.yaml",
-			"docker-compose.yml",
-			"compose.yaml",
-			"compose.yml"
-		),
-		single_file_support = true,
+		root_markers = { "docker-compose.yaml", "docker-compose.yml", "compose.yaml", "compose.yml" },
 	})
 
 	-- ------- efm: linters + formatters -------
@@ -195,7 +146,7 @@ local config = function()
 	local hadolint = require("efmls-configs.linters.hadolint")
 	local blade_formatter = require("efmls-configs.formatters.blade_formatter")
 
-	lspconfig.efm.setup({
+	vim.lsp.config("efm", {
 		filetypes = {
 			"lua",
 			"python",
@@ -235,6 +186,24 @@ local config = function()
 				blade = { blade_formatter },
 			},
 		},
+	})
+
+	-- Turn them all on
+	vim.lsp.enable({
+		"lua_ls",
+		"ts_ls",
+		"eslint",
+		"tailwindcss",
+		"html",
+		"jsonls",
+		"yamlls",
+		"bashls",
+		"marksman",
+		"basedpyright",
+		"intelephense",
+		"dockerls",
+		"docker_compose_language_service",
+		"efm",
 	})
 end
 
