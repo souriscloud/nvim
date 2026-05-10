@@ -1,30 +1,35 @@
 local keymap = vim.keymap
-
 local opts = { noremap = true, silent = true }
 
--- Directory Navigation
-keymap.set("n", "<leader>m", ":NvimTreeFocus<CR>", opts)
-keymap.set("n", "<leader>f", ":NvimTreeToggle<CR>", opts)
+-- File tree (rebound to <leader>e to avoid <leader>f collision with telescope)
+keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
+keymap.set("n", "<leader>E", ":NvimTreeFocus<CR>", opts)
 
--- Pane and Window Navigation
-keymap.set("n", "<C-h>", "<C-w>h", opts) -- Navigate Left
-keymap.set("n", "<C-j>", "<C-w>j", opts) -- Navigate Down
-keymap.set("n", "<C-k>", "<C-w>k", opts) -- Navigate Up
-keymap.set("n", "<C-l>", "<C-w>l", opts) -- Navigate Right
-keymap.set("n", "<C-h>", ":TmuxNavigateLeft<CR>", opts) -- Navigate Left
-keymap.set("n", "<C-j>", ":TmuxNavigateDown<CR>", opts) -- Navigate Down
-keymap.set("n", "<C-k>", ":TmuxNavigateUp<CR>", opts) -- Navigate Up
-keymap.set("n", "<C-l>", ":TmuxNavigateRight<CR>", opts) -- Navigate Right
+-- Window splits
+keymap.set("n", "<leader>sv", ":vsplit<CR>", opts)
+keymap.set("n", "<leader>sh", ":split<CR>", opts)
 
--- Window Management
-keymap.set("n", "<leader>sv", ":vsplit<CR>", opts) -- Split Vertically
-keymap.set("n", "<leader>sh", ":split<CR>", opts) -- Split Horizontally
-keymap.set("n", "<leader>sm", ":MaximizerToggle<CR>", opts) -- Toggle Minimize
+-- Buffers
+keymap.set("n", "<leader>bd", ":bdelete<CR>", opts)
+keymap.set("n", "[b", ":bprevious<CR>", opts)
+keymap.set("n", "]b", ":bnext<CR>", opts)
 
--- Indenting
+-- Visual indent: keep selection
 keymap.set("v", "<", "<gv")
 keymap.set("v", ">", ">gv")
 
--- Comments
-vim.api.nvim_set_keymap("n", "<C-_>", "gcc", { noremap = false })
-vim.api.nvim_set_keymap("v", "<C-_>", "gcc", { noremap = false })
+-- Move selected lines (visual mode)
+keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts)
+keymap.set("v", "K", ":m '<-2<CR>gv=gv", opts)
+
+-- Keep cursor centered on big jumps
+keymap.set("n", "<C-d>", "<C-d>zz", opts)
+keymap.set("n", "<C-u>", "<C-u>zz", opts)
+keymap.set("n", "n", "nzzzv", opts)
+keymap.set("n", "N", "Nzzzv", opts)
+
+-- Clear search highlight
+keymap.set("n", "<Esc>", ":nohlsearch<CR>", opts)
+
+-- Note: <C-h/j/k/l> for split navigation are provided by vim-tmux-navigator.
+-- Note: gcc / gc (visual) for commenting are provided by Comment.nvim.

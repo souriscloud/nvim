@@ -1,5 +1,3 @@
-local keymap = vim.keymap
-
 local config = function()
   local telescope = require('telescope')
   telescope.setup({
@@ -21,7 +19,7 @@ local config = function()
         theme = "dropdown",
         previewer = false,
       },
-      find_buffers = {
+      buffers = {
         theme = "dropdown",
         previewer = false,
       },
@@ -32,15 +30,16 @@ end
 return {
   'nvim-telescope/telescope.nvim',
   tag = '0.1.3',
-  lazy = false,
   dependencies = { 'nvim-lua/plenary.nvim' },
   config = config,
+  cmd = "Telescope",
   keys = {
-    keymap.set("n", "<leader>fk", ":Telescope keymaps<CR>"),
-    keymap.set("n", "<leader>fh", ":Telescope help_tags<CR>"),
-    keymap.set("n", "<leader>ff", ":Telescope find_files<CR>"),
-    keymap.set("n", "<leader>fg", ":Telescope live_grep<CR>"),
-    keymap.set("n", "<leader>fb", ":Telescope buffers<CR>"),
+    { "<leader>ff", "<cmd>Telescope find_files<cr>",  desc = "Find files" },
+    { "<leader>fg", "<cmd>Telescope live_grep<cr>",   desc = "Live grep" },
+    { "<leader>fb", "<cmd>Telescope buffers<cr>",     desc = "Buffers" },
+    { "<leader>fh", "<cmd>Telescope help_tags<cr>",   desc = "Help tags" },
+    { "<leader>fk", "<cmd>Telescope keymaps<cr>",     desc = "Keymaps" },
+    { "<leader>fr", "<cmd>Telescope oldfiles<cr>",    desc = "Recent files" },
+    { "<leader>/",  "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Search in buffer" },
   },
 }
-

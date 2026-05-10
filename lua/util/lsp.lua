@@ -1,27 +1,36 @@
-local mapkey = require("util.keymapper").mapkey
-
 local M = {}
 
--- set keymaps on the active lsp server
+-- Set keymaps when an LSP attaches to a buffer.
+-- Uses Neovim 0.11 built-in LSP UI + Telescope pickers (no lspsaga).
 M.on_attach = function(client, bufnr)
-	local opts = { noremap = true, silent = true, buffer = bufnr }
+  local function map(lhs, rhs, desc, mode)
+    vim.keymap.set(mode or "n", lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
+  end
 
-	mapkey("<leader>fd", "Lspsaga finder", "n", opts) -- go to definition
-	mapkey("<leader>gd", "Lspsaga peek_definition", "n", opts) -- peak definition
-	mapkey("<leader>gD", "Lspsaga goto_definition", "n", opts) -- go to definition
-	mapkey("<leader>ca", "Lspsaga code_action", "n", opts) -- see available code actions
-	mapkey("<leader>rn", "Lspsaga rename", "n", opts) -- smart rename
-	mapkey("<leader>D", "Lspsaga show_line_diagnostics", "n", opts) -- show  diagnostics for line
-	mapkey("<leader>d", "Lspsaga show_cursor_diagnostics", "n", opts) -- show diagnostics for cursor
-	mapkey("<leader>pd", "Lspsaga diagnostic_jump_prev", "n", opts) -- jump to prev diagnostic in buffer
-	mapkey("<leader>nd", "Lspsaga diagnostic_jump_next", "n", opts) -- jump to next diagnostic in buffer
-	mapkey("K", "Lspsaga hover_doc", "n", opts) -- show documentation for what is under cursor
+  -- Navigation
+  map("gd", vim.lsp.buf.definition, "LSP: go to definition")
+  map("gD", vim.lsp.buf.declaration, "LSP: go to declaration")
+  map("gi", vim.lsp.buf.implementation, "LSP: go to implementation")
+  map("gy", vim.lsp.buf.type_definition, "LSP: go to type definition")
+  map("gr", "<cmd>Telescope lsp_references<cr>", "LSP: references (Telescope)")
+  map("<leader>gs", "<cmd>Telescope lsp_document_symbols<cr>", "LSP: document symbols")
+  map("<leader>gS", "<cmd>Telescope lsp_workspace_symbols<cr>", "LSP: workspace symbols")
 
-	if client.name == "pyright" then
-		mapkey("<Leader>oi", "PyrightOrganizeImports", "n", opts)
-	end
+  -- Info
+  map("K", vim.lsp.buf.hover, "LSP: hover docs")
+  map("<C-k>", vim.lsp.buf.signature_help, "LSP: signature help", "i")
+
+  -- Actions
+  map("<leader>rn", vim.lsp.buf.rename, "LSP: rename")
+  map("<leader>ca", vim.lsp.buf.code_action, "LSP: code action")
+
+  -- Diagnostics
+  map("<leader>d", vim.diagnostic.open_float, "Diagnostics: line float")
+  map("[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, "Diagnostics: prev")
+  map("]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, "Diagnostics: next")
+  map("<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", "Diagnostics: Trouble list")
 end
 
-M.diagnostic_signs = { Error = " ", Warn = " ", Hint = "ﴞ ", Info = "" }
+M.diagnostic_signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
 
 return M
