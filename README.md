@@ -73,8 +73,10 @@ upstream (no replacement).
 - **oil.nvim** + **nvim-tree** — filesystem-as-buffer + sidebar tree
 - **flash.nvim** — jump-anywhere motions
 - **nvim-surround**, **Comment.nvim** — editing
-- **gitsigns**, **trouble**, **vim-illuminate**, **indent-blankline**
-- **lualine** (statusline), **nightfox** (colorscheme), **noice** (cmdline UI)
+- **snacks.nvim** — dashboard (start screen), indent guides + scope, smooth
+  scroll, bigfile/quickfile perf
+- **gitsigns**, **trouble**, **vim-illuminate**
+- **lualine** (statusline), **catppuccin** (mocha, transparent), **noice** (cmdline UI)
 - **which-key** — keymap hints
 - **vim-tmux-navigator** — `<C-hjkl>` across nvim splits + tmux panes
 
