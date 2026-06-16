@@ -4,7 +4,7 @@ local config = function()
 	require("neoconf").setup({})
 	require("nvim-autopairs").setup({})
 
-	-- Diagnostic signs (modern API; replaces vim.fn.sign_define loop)
+	-- Diagnostic signs + UI (modern vim.diagnostic API)
 	vim.diagnostic.config({
 		signs = {
 			text = {
@@ -19,26 +19,20 @@ local config = function()
 		float = { border = "rounded", source = true },
 	})
 
-	-- Global capabilities (cmp + base) — apply to every server via "*"
-	local capabilities = vim.tbl_deep_extend(
-		"force",
-		vim.lsp.protocol.make_client_capabilities(),
-		require("cmp_nvim_lsp").default_capabilities()
-	)
+	-- Global capabilities (blink.cmp + base) — applied to every server via "*".
+	-- blink is a dependency below, so it is loaded before any server attaches.
+	local capabilities = require("blink.cmp").get_lsp_capabilities()
 	vim.lsp.config("*", { capabilities = capabilities })
 
 	-- ------- Per-server config (merged with nvim-lspconfig's defaults) -------
 
+	-- lua_ls: lazydev + .luarc.json supply the Neovim runtime/`vim` globals,
+	-- so we only add editor niceties here.
 	vim.lsp.config("lua_ls", {
 		settings = {
 			Lua = {
-				diagnostics = { globals = { "vim" } },
-				workspace = {
-					library = {
-						[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-						[vim.fn.stdpath("config") .. "/lua"] = true,
-					},
-				},
+				hint = { enable = true },
+				workspace = { checkThirdParty = false },
 			},
 		},
 	})
@@ -54,8 +48,8 @@ local config = function()
 		root_markers = { "package.json", "tsconfig.json", ".git" },
 	})
 
-	-- ESLint: defaults from nvim-lspconfig are fine; we add EslintFixAll
-	-- via the LspAttach autocmd in config/autocmds.lua.
+	-- ESLint: defaults are fine; EslintFixAll on save is wired in
+	-- config/autocmds.lua via the LspAttach hook.
 	vim.lsp.config("eslint", {})
 
 	vim.lsp.config("tailwindcss", {
@@ -135,60 +129,52 @@ local config = function()
 		root_markers = { "docker-compose.yaml", "docker-compose.yml", "compose.yaml", "compose.yml" },
 	})
 
-	-- ------- efm: linters + formatters -------
+	-- ------- Systems languages -------
 
-	local selene = require("efmls-configs.linters.selene")
-	local stylua = require("efmls-configs.formatters.stylua")
-	local ruff = require("efmls-configs.linters.ruff")
-	local ruff_format = require("efmls-configs.formatters.ruff")
-	local prettierd = require("efmls-configs.formatters.prettier_d")
-	local fixjson = require("efmls-configs.formatters.fixjson")
-	local hadolint = require("efmls-configs.linters.hadolint")
-	local blade_formatter = require("efmls-configs.formatters.blade_formatter")
-
-	vim.lsp.config("efm", {
-		filetypes = {
-			"lua",
-			"python",
-			"json",
-			"jsonc",
-			"javascript",
-			"javascriptreact",
-			"typescript",
-			"typescriptreact",
-			"markdown",
-			"yaml",
-			"dockerfile",
-			"blade",
-		},
-		init_options = {
-			documentFormatting = true,
-			documentRangeFormatting = true,
-			hover = true,
-			documentSymbol = true,
-			codeAction = true,
-			completion = true,
-		},
+	vim.lsp.config("gopls", {
 		settings = {
-			rootMarkers = { ".git/" },
-			languages = {
-				lua = { selene, stylua },
-				python = { ruff, ruff_format },
-				json = { fixjson },
-				jsonc = { fixjson },
-				javascript = { prettierd },
-				javascriptreact = { prettierd },
-				typescript = { prettierd },
-				typescriptreact = { prettierd },
-				markdown = { prettierd },
-				yaml = { prettierd },
-				dockerfile = { hadolint },
-				blade = { blade_formatter },
+			gopls = {
+				gofumpt = true,
+				staticcheck = true,
+				analyses = {
+					unusedparams = true,
+					unusedwrite = true,
+					nilness = true,
+				},
+				hints = {
+					assignVariableTypes = true,
+					compositeLiteralFields = true,
+					constantValues = true,
+					functionTypeParameters = true,
+					parameterNames = true,
+					rangeVariableTypes = true,
+				},
 			},
 		},
 	})
 
-	-- Turn them all on
+	vim.lsp.config("zls", {
+		settings = {
+			zls = {
+				enable_build_on_save = false,
+				semantic_tokens = "partial",
+			},
+		},
+	})
+
+	-- ols: Odin language server (installed via Mason once you start writing Odin).
+	vim.lsp.config("ols", {})
+
+	-- sourcekit-lsp ships with the Swift/Xcode toolchain (not Mason-installable).
+	-- It needs dynamic file-watching registration to track non-open files.
+	vim.lsp.config("sourcekit", {
+		capabilities = vim.tbl_deep_extend("force", capabilities, {
+			workspace = { didChangeWatchedFiles = { dynamicRegistration = true } },
+		}),
+	})
+
+	-- Turn them all on. (Formatting/linting is handled by conform.nvim +
+	-- nvim-lint, not an LSP — see lua/plugins/conform.lua and nvim-lint.lua.)
 	vim.lsp.enable({
 		"lua_ls",
 		"ts_ls",
@@ -203,7 +189,10 @@ local config = function()
 		"intelephense",
 		"dockerls",
 		"docker_compose_language_service",
-		"efm",
+		"gopls",
+		"zls",
+		"ols",
+		"sourcekit",
 	})
 end
 
@@ -213,12 +202,9 @@ return {
 	lazy = false,
 	dependencies = {
 		"windwp/nvim-autopairs",
-		"williamboman/mason.nvim",
-		"creativenull/efmls-configs-nvim",
+		"mason-org/mason.nvim",
 		"folke/neoconf.nvim",
 		"folke/lazydev.nvim",
-		"hrsh7th/nvim-cmp",
-		"hrsh7th/cmp-buffer",
-		"hrsh7th/cmp-nvim-lsp",
+		"saghen/blink.cmp",
 	},
 }

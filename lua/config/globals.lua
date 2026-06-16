@@ -3,6 +3,9 @@ vim.g.maplocalleader = " "
 
 -- Filetype rules — register early so LSPs see them at config time
 vim.filetype.add({
+  extension = {
+    jai = "jai", -- Jai: filetype only (no LSP/treesitter parser exists yet)
+  },
   pattern = {
     [".*%.blade%.php"] = "blade",
   },

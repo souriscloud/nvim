@@ -18,7 +18,9 @@ M.on_attach = function(client, bufnr)
 
   -- Info
   map("K", vim.lsp.buf.hover, "LSP: hover docs")
-  map("<C-k>", vim.lsp.buf.signature_help, "LSP: signature help", "i")
+  -- Signature help on gK (blink.cmp also shows it automatically while typing;
+  -- insert-mode <C-k> belongs to blink for selecting the previous item).
+  map("gK", vim.lsp.buf.signature_help, "LSP: signature help")
 
   -- Actions
   map("<leader>rn", vim.lsp.buf.rename, "LSP: rename")

@@ -1,24 +1,29 @@
--- Auto-install formatters / linters that efm pipes through.
--- Mason-lspconfig only handles LSPs; this fills the gap for everything else.
+-- Auto-install the formatters / linters used by conform.nvim + nvim-lint.
+-- (mason-lspconfig only handles LSP servers; this fills the rest.)
 return {
 	"WhoIsSethDaniel/mason-tool-installer.nvim",
 	event = "VeryLazy",
-	dependencies = { "williamboman/mason.nvim" },
+	dependencies = { "mason-org/mason.nvim" },
 	opts = {
 		ensure_installed = {
 			-- lua
-			"stylua",
-			"selene",
-			-- python (single tool, lint + format)
+			"stylua", -- format
+			"selene", -- lint
+			-- python (ruff: format + lint)
 			"ruff",
-			-- web (formatter; eslint LSP handles linting)
+			-- web (prettierd: format; eslint LSP lints)
 			"prettierd",
-			-- json
-			"fixjson",
+			-- shell (bashls uses shellcheck for linting if present)
+			"shellcheck",
 			-- docker
-			"hadolint",
-			-- blade (formatter)
+			"hadolint", -- lint
+			-- blade
 			"blade-formatter",
+			-- go (zig fmt ships with the zig binary; nothing to install)
+			"gofumpt",
+			"goimports",
+			-- swift
+			"swiftformat",
 		},
 		auto_update = false,
 		run_on_start = true,

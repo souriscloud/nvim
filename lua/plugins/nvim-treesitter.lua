@@ -1,68 +1,90 @@
-local config = function()
-	-- Register the community Blade parser (not in nvim-treesitter's default list)
-	local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-	parser_config.blade = {
+-- nvim-treesitter — rewritten "main" branch (requires Neovim 0.12+).
+-- Differences from the legacy branch:
+--   * no configs.setup({ ensure_installed, highlight, indent }) — instead we
+--     call require("nvim-treesitter").install(...) and start highlighting via
+--     a FileType autocmd.
+--   * incremental selection was removed upstream (no replacement here).
+--   * custom community parsers register through the `User TSUpdate` event.
+-- Parsers generated from grammar.js (Swift, Blade) need `tree-sitter-cli` >=0.25
+-- on PATH (brew install tree-sitter-cli) so it can emit ABI 15 for Nvim 0.12.
+
+-- Languages with parsers in the official registry.
+local ensure = {
+	"markdown",
+	"markdown_inline",
+	"json",
+	"javascript",
+	"typescript",
+	"tsx",
+	"yaml",
+	"toml",
+	"html",
+	"css",
+	"bash",
+	"lua",
+	"luadoc",
+	"vim",
+	"vimdoc",
+	"dockerfile",
+	"gitignore",
+	"python",
+	"vue",
+	"regex",
+	"php",
+	"php_only",
+	"swift",
+	"go",
+	"gomod",
+	"gosum",
+	"zig",
+	"odin",
+}
+
+-- Register the community Blade parser (not in the official registry).
+local function register_blade()
+	require("nvim-treesitter.parsers").blade = {
 		install_info = {
 			url = "https://github.com/EmranMR/tree-sitter-blade",
-			files = { "src/parser.c", "src/scanner.c" },
 			branch = "main",
+			files = { "src/parser.c" },
+			queries = "queries",
 		},
-		filetype = "blade",
+		tier = 3,
 	}
+	vim.treesitter.language.register("blade", { "blade" })
+end
 
-	require("nvim-treesitter.configs").setup({
-		ensure_installed = {
-			"markdown",
-			"markdown_inline",
-			"json",
-			"jsonc",
-			"javascript",
-			"typescript",
-			"yaml",
-			"toml",
-			"html",
-			"css",
-			"bash",
-			"lua",
-			"luadoc",
-			"vim",
-			"vimdoc",
-			"tsx",
-			"dockerfile",
-			"gitignore",
-			"python",
-			"vue",
-			"regex",
-			"php",
-			"php_only",
-			"blade",
-		},
-		auto_install = true,
-		highlight = {
-			enable = true,
-			additional_vim_regex_highlighting = false,
-		},
-		indent = {
-			enable = true,
-		},
-		incremental_selection = {
-			enable = true,
-			keymaps = {
-				init_selection = "<C-Space>",
-				node_incremental = "<C-Space>",
-				node_decremental = "<BS>",
-				scope_incremental = "<C-s>",
-			},
-		},
+local config = function()
+	require("nvim-treesitter").setup()
+
+	register_blade()
+	-- jsonc has no dedicated parser; reuse the json parser for it.
+	vim.treesitter.language.register("json", { "json", "jsonc" })
+	-- Re-register on :TSUpdate (the update flow rebuilds the parser table).
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "TSUpdate",
+		callback = register_blade,
+	})
+
+	-- Install the official parsers + blade (async; skips already-installed).
+	require("nvim-treesitter").install(ensure)
+	require("nvim-treesitter").install({ "blade" })
+
+	-- Start highlighting (and treesitter indentation) whenever a buffer has a
+	-- parser available. pcall guards filetypes without one.
+	vim.api.nvim_create_autocmd("FileType", {
+		group = vim.api.nvim_create_augroup("TreesitterStart", {}),
+		callback = function(args)
+			if pcall(vim.treesitter.start, args.buf) then
+				vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+			end
+		end,
 	})
 end
 
 return {
 	"nvim-treesitter/nvim-treesitter",
-	-- Pin to the legacy API. Master's `c82bf96` (Mar 2026) merged the rewrite
-	-- and removed `nvim-treesitter.configs.setup()` + `get_parser_configs()`,
-	-- which our config relies on. The rewrite needs Nvim 0.12+.
-	tag = "v0.9.3",
+	branch = "main",
 	lazy = false,
 	build = ":TSUpdate",
 	config = config,

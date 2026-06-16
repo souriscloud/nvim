@@ -1,24 +1,18 @@
 local config = function()
-	local theme = require("lualine.themes.nightfox")
-	-- theme.normal.c.bg = nil
-
 	require("lualine").setup({
 		options = {
-			theme = theme,
+			theme = "nightfox",
 			globalstatus = true,
 		},
 		sections = {
-			lualine_a = {
-				{
-					"mode",
-				},
-			},
+			lualine_a = { "mode" },
 		},
 	})
 end
 
 return {
 	"nvim-lualine/lualine.nvim",
-	lazy = false,
+	event = "VeryLazy",
+	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = config,
 }

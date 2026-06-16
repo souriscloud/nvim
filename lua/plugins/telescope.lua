@@ -25,12 +25,16 @@ local config = function()
       },
     },
   })
+  telescope.load_extension("fzf")
 end
 
 return {
   'nvim-telescope/telescope.nvim',
-  tag = '0.1.3',
-  dependencies = { 'nvim-lua/plenary.nvim' },
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    -- Native fzf sorter (C) — much faster fuzzy matching than the Lua sorter.
+    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+  },
   config = config,
   cmd = "Telescope",
   keys = {

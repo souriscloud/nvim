@@ -20,17 +20,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
--- Format on save via efm-langserver
-vim.api.nvim_create_autocmd("BufWritePre", {
-  group = vim.api.nvim_create_augroup("LspFormattingGroup", {}),
-  callback = function(args)
-    local efm = vim.lsp.get_clients({ bufnr = args.buf, name = "efm" })
-    if vim.tbl_isempty(efm) then
-      return
-    end
-    vim.lsp.buf.format({ name = "efm", async = true })
-  end,
-})
+-- Format on save is handled by conform.nvim (see lua/plugins/conform.lua).
 
 -- Flash on yank (replaces vim-highlightedyank plugin)
 vim.api.nvim_create_autocmd("TextYankPost", {
