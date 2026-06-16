@@ -13,6 +13,10 @@ opt.ignorecase = true
 opt.smartcase = true
 opt.hlsearch = false
 
+-- :grep uses ripgrep and feeds the quickfix list (file:line:col:text)
+opt.grepprg = "rg --vimgrep --smart-case"
+opt.grepformat = "%f:%l:%c:%m"
+
 -- Appearance
 opt.relativenumber = true
 opt.termguicolors = true

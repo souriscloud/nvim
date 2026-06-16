@@ -14,6 +14,13 @@ keymap.set("n", "<leader>bd", ":bdelete<CR>", opts)
 keymap.set("n", "[b", ":bprevious<CR>", opts)
 keymap.set("n", "]b", ":bnext<CR>", opts)
 
+-- Quickfix list (the :grep results buffer)
+keymap.set("n", "]q", ":cnext<CR>", opts)
+keymap.set("n", "[q", ":cprevious<CR>", opts)
+keymap.set("n", "]Q", ":clast<CR>", opts)
+keymap.set("n", "[Q", ":cfirst<CR>", opts)
+keymap.set("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", opts)
+
 -- Visual indent: keep selection
 keymap.set("v", "<", "<gv")
 keymap.set("v", ">", ">gv")

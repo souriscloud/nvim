@@ -22,6 +22,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 -- Format on save is handled by conform.nvim (see lua/plugins/conform.lua).
 
+-- Auto-open the quickfix window after :grep (so matches are immediately
+-- browsable, like Emacs grep-mode).
+vim.api.nvim_create_autocmd("QuickFixCmdPost", {
+  group = vim.api.nvim_create_augroup("AutoOpenQuickfix", {}),
+  pattern = { "grep", "grepadd", "vimgrep", "vimgrepadd" },
+  command = "botright cwindow",
+})
+
 -- Flash on yank (replaces vim-highlightedyank plugin)
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("HighlightYank", {}),
