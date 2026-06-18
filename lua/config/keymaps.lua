@@ -39,4 +39,4 @@ keymap.set("n", "N", "Nzzzv", opts)
 keymap.set("n", "<Esc>", ":nohlsearch<CR>", opts)
 
 -- Note: <C-h/j/k/l> for split navigation are provided by vim-tmux-navigator.
--- Note: gcc / gc (visual) for commenting are provided by Comment.nvim.
+-- Note: gc / gcc / visual gc commenting is built into Neovim (0.10+), no plugin.

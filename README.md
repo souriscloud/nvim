@@ -72,7 +72,7 @@ upstream (no replacement).
 - **telescope** (+ fzf-native) — fuzzy finder
 - **oil.nvim** + **nvim-tree** — filesystem-as-buffer + sidebar tree
 - **flash.nvim** — jump-anywhere motions
-- **nvim-surround**, **Comment.nvim** — editing
+- **nvim-surround** — editing (commenting is built into Neovim: `gc`/`gcc`)
 - **snacks.nvim** — dashboard (start screen), indent guides + scope, smooth
   scroll, bigfile/quickfile perf
 - **gitsigns**, **trouble**, **vim-illuminate**
